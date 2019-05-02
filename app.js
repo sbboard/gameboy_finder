@@ -10,21 +10,32 @@ let ebay = new eBay({
     }
 });
 
-//calculate endDate
-let endDate = "..2016-12-14T07:47:48Z"
-
-ebay.getAccessToken()
-    .then((data) => {
-        ebay.searchItems({
-            keyword: "gameboy color",
-            categoryId: 139973,
-            limit: 10,
-            filter: `price:[..10],priceCurrency:USD,conditionIds:{7000},itemEndDate:[..${endDate}]` // new string based filter method. Format here: https://developer.ebay.com/api-docs/buy/static/ref-buy-browse-filters.html#conditionIds
-        })
+function ebaySearch(endDate){
+    ebay.getAccessToken()
         .then((data) => {
-            console.log(data);
-        })
-})
-.catch((err) => {
-    console.log(err)
-})
+            ebay.searchItems({
+                keyword: "gameboy color",
+                categoryId: 139973,
+                limit: 10,
+                filter: `price:[..10],priceCurrency:USD,conditionIds:{7000},itemEndDate:[..${endDate}]` 
+                //Format here: https://developer.ebay.com/api-docs/buy/static/ref-buy-browse-filters.html#conditionIds
+            })
+            .then((data) => {
+                console.log(data);
+            })
+    })
+    .catch((err) => {
+        console.log(err)
+    })
+}
+
+setTimeout(()=> {
+    //get time
+    //if time is 7AM
+    //set endDate to today
+    let searchResults = ebaySearch(endDate)
+    if(searchResults.length > 0){
+        //email myself search results
+        console.log(searchResults)
+    }
+}, 60*60*1000);
