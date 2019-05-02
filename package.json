@@ -1,0 +1,22 @@
+{
+  "name": "gameboy-finder",
+  "version": "1.0.0",
+  "description": "finds broken gameboys on ebay and notifies user",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sbboard/gameboy_finder.git"
+  },
+  "author": "Buffum",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sbboard/gameboy_finder/issues"
+  },
+  "homepage": "https://github.com/sbboard/gameboy_finder#readme",
+  "dependencies": {
+    "ebay-node-api": "^2.5.5"
+  }
+}
