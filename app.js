@@ -1,38 +1,35 @@
-let eBay = require('ebay-node-api')
+const Ebay = require('ebay-node-api')
 const path = require('path')
 const config = require(path.join(__dirname, 'config.js'));
- 
-let ebay = new eBay({
-    clientID: config.client_id,
-    clientSecret: config.client_secret,
-    body: {
-        grant_type: config.client_credentials
-    }
+
+let ebay = new Ebay({
+    clientID: config.client_id
 });
 
-//function ebaySearch(endDate){
-    ebay.getAccessToken()
-        .then((data) => {
-            ebay.searchItems({
-                keyword: "gameboy color",
-                categoryId: 139973,
-                limit: 10,
-                filter: `
-                        price:[..10],
-                        priceCurrency:USD,
-                        conditionIds:{7000},
-                        itemEndDate:[..${endDate}]
-                        ` 
-                //Format here: https://developer.ebay.com/api-docs/buy/static/ref-buy-browse-filters.html#conditionIds
-            })
-            .then((data) => {
-                console.log(data);
-            })
-    })
-    .catch((err) => {
-        console.log(err)
-    })
-//}
+let theBoys = []
+
+ebay.findItemsByKeywords("\"gameboy color\" \"for parts\"")
+.then((data) => {
+    for(let i=0;i<data[0].searchResult[0].item.length;i++){
+        let gameboy = data[0].searchResult[0].item[i]
+        let price = parseFloat(gameboy.sellingStatus[0].convertedCurrentPrice[0].__value__)
+        let shippingCost = parseFloat(gameboy.shippingInfo[0].shippingServiceCost[0].__value__)
+        let endTime = gameboy.listingInfo[0].endTime[0]
+        let today = new Date();
+        let diff =  Math.floor(( Date.parse(endTime) - Date.parse(today) ) / 86400000);
+        if(gameboy.condition[0].conditionId[0] == 7000 && gameboy.primaryCategory[0].categoryId[0] == 139971 && (price + shippingCost <= 15) && diff <= 1){
+            theBoys.push(
+                {
+                    name: gameboy.title[0],
+                    cost: price + shippingCost,
+                    link:gameboy.viewItemURL[0],
+                })
+        }
+    }
+    console.log(theBoys)
+}, (error) => {
+    console.log(error);
+});
 
 //setTimeout(()=> {
     //get time
