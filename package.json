@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/sbboard/gameboy_finder#readme",
   "dependencies": {
-    "ebay-node-api": "^2.5.5"
+    "ebay-node-api": "^2.5.5",
+    "nodemailer": "^6.1.1"
   }
 }
