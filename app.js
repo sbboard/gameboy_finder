@@ -3,8 +3,8 @@ const nodemailer = require("nodemailer")
 const path = require('path')
 const config = require(path.join(__dirname, 'config.js'));
 const admin = {
-    interval: 60*1000,
-    dayOf: 5
+    interval: 60*60*1000,
+    dayOf: 1
 }
 
 let ebay = new Ebay({
@@ -23,7 +23,7 @@ let transporter = nodemailer.createTransport({
 setInterval(()=> {
     let theBoys = []
     let today = new Date()
-    //if(today.getHours() == 7){
+    if(today.getHours() == 7){
         ebay.findItemsByKeywords("\"gameboy color\" \"for parts\"")
         .then((data) => {
             for(let i=0;i<data[0].searchResult[0].item.length;i++){
@@ -47,20 +47,21 @@ setInterval(()=> {
                 let messageText = ""
                 let messageHTML = ""
                 for(let i=0;i<theBoys.length;i++){
-                    messageText += `${theBoys[i].name} ($${theBoys[i].cost}): ${theBoys[i].link}`
-                    messageHTML += `<b>${theBoys[i].name} ($${theBoys[i].cost}):</b> <a href="${theBoys[i].link}">${theBoys[i].link}</a></br>`
+                    messageText += `Hey dude! Here's some gameboys you might want to check out. ${theBoys[i].name} ($${theBoys[i].cost}): ${theBoys[i].link}`
+                    messageHTML += `Hey dude! Here's some gameboys you might want to check out.<br><br><b>${theBoys[i].name} ($${theBoys[i].cost}):</b> <a href="${theBoys[i].link}">link</a><br>`
                 }
                 transporter.sendMail({
-                    from: '"Game Boy" <gameboy@gang-fight.com>', // sender address
+                    from: '"GameBoy Bot" <gameboy@gang-fight.com>', // sender address
                     to: "colin.buffum@gmail.com", // list of receivers
                     subject: "Some Good Gameboys Ending Today!", // Subject line
                     text: messageText, // plain text body
                     html: messageHTML // html body
               });
+              console.log("email sent")
             }
             else{
                 console.log("none")
             }
         })
-    //}
+    }
 }, admin.interval);
