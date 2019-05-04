@@ -3,9 +3,9 @@ const nodemailer = require("nodemailer")
 const path = require('path')
 const config = require(path.join(__dirname, 'config.js'));
 const admin = {
-    interval: 10*1000,
-    dayOf: 5,
-    dayOverride: true,
+    interval: 60*60*1000,
+    dayOf: 1,
+    dayOverride: false,
 }
 
 let ebay = new Ebay({
@@ -34,7 +34,6 @@ setInterval(()=> {
                 let endTime = gameboy.listingInfo[0].endTime[0]
                 let diff =  Math.floor(( Date.parse(endTime) - Date.parse(today) ) / 86400000);
                 if(gameboy.condition[0].conditionId[0] == 7000 && gameboy.primaryCategory[0].categoryId[0] == 139971 && (price + shippingCost <= 15) && diff <= admin.dayOf){
-                    console.log(gameboy)
                     theBoys.push(
                         {
                             name: gameboy.title[0],
@@ -47,13 +46,17 @@ setInterval(()=> {
         .then(()=>{
             if(theBoys.length > 0){
                 let messageText = "Hey dude! Here's some gameboys you might want to check out. "
-                let messageHTML = "Hey dude! Here's some gameboys you might want to check out.<br><br>"
+                let messageHTML = "Hey dude! Here's some gameboys you might want to check out.<br><br><table style='border: 1px solid black; width: 100%'>"
                 theBoys.sort(({cost:a}, {cost:b}) => a-b);
-                console.log(theBoys)
                 for(let i=0;i<theBoys.length;i++){
                     messageText += `${theBoys[i].name} ($${theBoys[i].cost}): ${theBoys[i].link}`
-                    messageHTML += `<b>${theBoys[i].name} ($${theBoys[i].cost}):</b> <a href="${theBoys[i].link}">link</a><br>`
+                    messageHTML += `<tr>
+                                    <td style='border: 1px solid black'><b>${theBoys[i].name}</b></td>
+                                    <td style='border: 1px solid black'><b>$${theBoys[i].cost}</b></td>
+                                    <td style='border: 1px solid black'><a href="${theBoys[i].link}">link</a></td>
+                                    </tr>`
                 }
+                messageHTML += "</table>"
                 transporter.sendMail({
                     from: '"GameBoy Bot" <gameboy@gang-fight.com>', // sender address
                     to: "colin.buffum@gmail.com", // list of receivers
