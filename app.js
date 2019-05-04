@@ -3,8 +3,9 @@ const nodemailer = require("nodemailer")
 const path = require('path')
 const config = require(path.join(__dirname, 'config.js'));
 const admin = {
-    interval: 60*60*1000,
-    dayOf: 1
+    interval: 10*1000,
+    dayOf: 5,
+    dayOverride: true,
 }
 
 let ebay = new Ebay({
@@ -23,7 +24,7 @@ let transporter = nodemailer.createTransport({
 setInterval(()=> {
     let theBoys = []
     let today = new Date()
-    if(today.getHours() == 7){
+    if(today.getHours() == 1 || admin.dayOverride == true){
         ebay.findItemsByKeywords("\"gameboy color\" \"for parts\"")
         .then((data) => {
             for(let i=0;i<data[0].searchResult[0].item.length;i++){
@@ -33,6 +34,7 @@ setInterval(()=> {
                 let endTime = gameboy.listingInfo[0].endTime[0]
                 let diff =  Math.floor(( Date.parse(endTime) - Date.parse(today) ) / 86400000);
                 if(gameboy.condition[0].conditionId[0] == 7000 && gameboy.primaryCategory[0].categoryId[0] == 139971 && (price + shippingCost <= 15) && diff <= admin.dayOf){
+                    console.log(gameboy)
                     theBoys.push(
                         {
                             name: gameboy.title[0],
@@ -44,11 +46,13 @@ setInterval(()=> {
         })
         .then(()=>{
             if(theBoys.length > 0){
-                let messageText = ""
-                let messageHTML = ""
+                let messageText = "Hey dude! Here's some gameboys you might want to check out. "
+                let messageHTML = "Hey dude! Here's some gameboys you might want to check out.<br><br>"
+                theBoys.sort(({cost:a}, {cost:b}) => a-b);
+                console.log(theBoys)
                 for(let i=0;i<theBoys.length;i++){
-                    messageText += `Hey dude! Here's some gameboys you might want to check out. ${theBoys[i].name} ($${theBoys[i].cost}): ${theBoys[i].link}`
-                    messageHTML += `Hey dude! Here's some gameboys you might want to check out.<br><br><b>${theBoys[i].name} ($${theBoys[i].cost}):</b> <a href="${theBoys[i].link}">link</a><br>`
+                    messageText += `${theBoys[i].name} ($${theBoys[i].cost}): ${theBoys[i].link}`
+                    messageHTML += `<b>${theBoys[i].name} ($${theBoys[i].cost}):</b> <a href="${theBoys[i].link}">link</a><br>`
                 }
                 transporter.sendMail({
                     from: '"GameBoy Bot" <gameboy@gang-fight.com>', // sender address
@@ -60,7 +64,7 @@ setInterval(()=> {
               console.log("email sent")
             }
             else{
-                console.log("none")
+                console.log("no gameboys today")
             }
         })
     }
