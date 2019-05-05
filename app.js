@@ -5,6 +5,7 @@ const config = require(path.join(__dirname, 'config.js'));
 const admin = {
     interval: 60*60*1000,
     dayOf: 1,
+    timeToSend: 13,
     dayOverride: false,
 }
 
@@ -24,7 +25,8 @@ let transporter = nodemailer.createTransport({
 setInterval(()=> {
     let theBoys = []
     let today = new Date()
-    if(today.getHours() == 1 || admin.dayOverride == true){
+    console.log(today)
+    if(today.getHours() == admin.timeToSend || admin.dayOverride == true){
         ebay.findItemsByKeywords("\"gameboy color\" \"for parts\"")
         .then((data) => {
             for(let i=0;i<data[0].searchResult[0].item.length;i++){
