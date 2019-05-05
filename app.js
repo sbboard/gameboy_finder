@@ -3,10 +3,10 @@ const nodemailer = require("nodemailer")
 const path = require('path')
 const config = require(path.join(__dirname, 'config.js'));
 const admin = {
-    interval: 60*60*1000,
-    dayOf: 1,
-    timeToSend: 13,
-    dayOverride: false,
+    interval: 10*1000,
+    dayOf: .5,
+    timeToSend: 17,
+    dayOverride: true,
 }
 
 let ebay = new Ebay({
@@ -25,16 +25,21 @@ let transporter = nodemailer.createTransport({
 setInterval(()=> {
     let theBoys = []
     let today = new Date()
-    console.log(today)
     if(today.getHours() == admin.timeToSend || admin.dayOverride == true){
         ebay.findItemsByKeywords("\"gameboy color\" \"for parts\"")
         .then((data) => {
             for(let i=0;i<data[0].searchResult[0].item.length;i++){
                 let gameboy = data[0].searchResult[0].item[i]
                 let price = parseFloat(gameboy.sellingStatus[0].convertedCurrentPrice[0].__value__)
-                let shippingCost = parseFloat(gameboy.shippingInfo[0].shippingServiceCost[0].__value__)
+                let shippingCost = 0
+                if(typeof gameboy.shippingInfo[0].shippingServiceCost != 'undefined'){
+                    shippingCost = parseFloat(gameboy.shippingInfo[0].shippingServiceCost[0].__value__)
+                }
+                else{
+                    console.log(gameboy.shippingInfo)
+                }
                 let endTime = gameboy.listingInfo[0].endTime[0]
-                let diff =  Math.floor(( Date.parse(endTime) - Date.parse(today) ) / 86400000);
+                let diff =  ( Date.parse(endTime) - Date.parse(today) ) / 86400000;
                 if(gameboy.condition[0].conditionId[0] == 7000 && gameboy.primaryCategory[0].categoryId[0] == 139971 && (price + shippingCost <= 15) && diff <= admin.dayOf){
                     theBoys.push(
                         {
