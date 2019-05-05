@@ -36,7 +36,7 @@ setInterval(()=> {
                     shippingCost = parseFloat(gameboy.shippingInfo[0].shippingServiceCost[0].__value__)
                 }
                 else{
-                    console.log(gameboy.shippingInfo)
+                    shippingCost = 8
                 }
                 let endTime = gameboy.listingInfo[0].endTime[0]
                 let diff =  ( Date.parse(endTime) - Date.parse(today) ) / 86400000;
@@ -56,10 +56,10 @@ setInterval(()=> {
                 let messageHTML = "Hey dude! Here's some gameboys you might want to check out.<br><br><table style='border: 1px solid black; width: 100%'>"
                 theBoys.sort(({cost:a}, {cost:b}) => a-b);
                 for(let i=0;i<theBoys.length;i++){
-                    messageText += `${theBoys[i].name} ($${theBoys[i].cost}): ${theBoys[i].link}`
+                    messageText += `${theBoys[i].name} ($${theBoys[i].cost.toFixed(2)}): ${theBoys[i].link}`
                     messageHTML += `<tr>
                                     <td style='border: 1px solid black'><b>${theBoys[i].name}</b></td>
-                                    <td style='border: 1px solid black'><b>$${theBoys[i].cost}</b></td>
+                                    <td style='border: 1px solid black'><b>$${theBoys[i].cost.toFixed(2)}</b></td>
                                     <td style='border: 1px solid black'><a href="${theBoys[i].link}">link</a></td>
                                     </tr>`
                 }
