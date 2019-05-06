@@ -3,10 +3,10 @@ const nodemailer = require("nodemailer")
 const path = require('path')
 const config = require(path.join(__dirname, 'config.js'));
 const admin = {
-    interval: 10*1000,
-    dayOf: .5,
-    timeToSend: 17,
-    dayOverride: true,
+    interval: 60*60*1000,
+    dayOf: .75,
+    timeToSend: 15,
+    dayOverride: false,
 }
 
 let ebay = new Ebay({
