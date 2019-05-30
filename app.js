@@ -5,7 +5,8 @@ const config = require(path.join(__dirname, 'config.js'));
 const admin = {
     interval: 60*60*1000,
     dayOf: .75,
-    timeToSend: 15,
+    timeToSend: 9+6,
+    maxPrice: 20,
     dayOverride: false,
 }
 
@@ -40,12 +41,13 @@ setInterval(()=> {
                 }
                 let endTime = gameboy.listingInfo[0].endTime[0]
                 let diff =  ( Date.parse(endTime) - Date.parse(today) ) / 86400000;
-                if(gameboy.condition[0].conditionId[0] == 7000 && gameboy.primaryCategory[0].categoryId[0] == 139971 && (price + shippingCost <= 15) && diff <= admin.dayOf){
+                if(gameboy.condition[0].conditionId[0] == 7000 && gameboy.primaryCategory[0].categoryId[0] == 139971 && (price + shippingCost <= admin.maxPrice) && diff <= admin.dayOf){
                     theBoys.push(
                         {
                             name: gameboy.title[0],
                             cost: price + shippingCost,
                             link:gameboy.viewItemURL[0],
+                            diffNo: diff
                         })
                 }
             }
@@ -61,6 +63,7 @@ setInterval(()=> {
                                     <td style='border: 1px solid black'><b>${theBoys[i].name}</b></td>
                                     <td style='border: 1px solid black'><b>$${theBoys[i].cost.toFixed(2)}</b></td>
                                     <td style='border: 1px solid black'><a href="${theBoys[i].link}">link</a></td>
+                                    <td style='border: 1px solid black'>${theBoys[i].diffNo}</td>
                                     </tr>`
                 }
                 messageHTML += "</table>"
