@@ -58,12 +58,15 @@ setInterval(()=> {
                 let messageHTML = "Hey dude! Here's some gameboys you might want to check out.<br><br><table style='border: 1px solid black; width: 100%'>"
                 theBoys.sort(({cost:a}, {cost:b}) => a-b);
                 for(let i=0;i<theBoys.length;i++){
+                    let secondCount = theBoys[i].diffNo * 86400
+                    let minuteCount = secondCount / 60
+                    let hourCount = minuteCount / 60
                     messageText += `${theBoys[i].name} ($${theBoys[i].cost.toFixed(2)}): ${theBoys[i].link}`
                     messageHTML += `<tr>
                                     <td style='border: 1px solid black'><b>${theBoys[i].name}</b></td>
                                     <td style='border: 1px solid black'><b>$${theBoys[i].cost.toFixed(2)}</b></td>
                                     <td style='border: 1px solid black'><a href="${theBoys[i].link}">link</a></td>
-                                    <td style='border: 1px solid black'>${theBoys[i].diffNo}</td>
+                                    <td style='border: 1px solid black'>${hourCount} Hour(s) Left</td>
                                     </tr>`
                 }
                 messageHTML += "</table>"
